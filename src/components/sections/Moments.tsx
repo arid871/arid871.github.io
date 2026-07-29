@@ -87,6 +87,8 @@ export function Moments() {
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                       />
                     </button>
+
+                    {/* Desktop/tablet: stacked photo overlapping the corner */}
                     {moment.images[1] && (
                       <button
                         onClick={() => setLightbox(moment.images[1])}
@@ -99,6 +101,23 @@ export function Moments() {
                           alt={`${moment.title} certificate`}
                           className="w-full h-full object-cover"
                         />
+                      </button>
+                    )}
+
+                    {/* Mobile: small inline thumbnail below the main photo */}
+                    {moment.images[1] && (
+                      <button
+                        onClick={() => setLightbox(moment.images[1])}
+                        className="md:hidden mt-3 flex items-center gap-2 text-xs text-neutral-500"
+                      >
+                        <span className="w-14 h-14 rounded-lg overflow-hidden border border-neutral-200 shadow-sm flex-shrink-0">
+                          <img
+                            src={moment.images[1]}
+                            alt={`${moment.title} certificate`}
+                            className="w-full h-full object-cover"
+                          />
+                        </span>
+                        View certificate
                       </button>
                     )}
                   </div>
