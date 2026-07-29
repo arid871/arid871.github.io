@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
-const NAV_ITEMS = ['moments', 'about', 'milestones'];
+const NAV_ITEMS = ['moments', 'projects', 'about', 'milestones'];
 
 interface NavbarProps {
   onOpenResume: () => void;

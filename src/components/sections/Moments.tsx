@@ -1,6 +1,5 @@
-import { ArrowRight } from 'lucide-react';
-import { CASE_STUDIES, type CaseStudy } from '../../data/portfolio';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { MOMENTS } from '../../data/portfolio';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -18,7 +17,7 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 }
 
-function CaseModal({ study, onClose }: { study: CaseStudy; onClose: () => void }) {
+function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     const handleKey = (e: KeyboardEvent) => {
@@ -32,85 +31,97 @@ function CaseModal({ study, onClose }: { study: CaseStudy; onClose: () => void }
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-auto shadow-2xl">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-5 text-neutral-400 hover:text-neutral-800 text-xs tracking-widest uppercase z-10"
-        >
-          Close
-        </button>
-        <img
-          src={study.image}
-          alt={study.title}
-          className="w-full aspect-video object-cover rounded-t-xl"
-        />
-        <div className="p-8">
-          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-2">
-            {study.label}
-          </p>
-          <h3 className="font-heading text-2xl font-semibold text-neutral-900 mb-3">{study.title}</h3>
-          <div className="flex items-baseline gap-2 mb-5">
-            <span className="font-heading text-3xl font-bold text-neutral-900">{study.stat}</span>
-            <span className="text-xs tracking-widest uppercase text-neutral-400">
-              {study.statLabel}
-            </span>
-          </div>
-          <p className="text-neutral-500 leading-relaxed text-sm">{study.description}</p>
-        </div>
-      </div>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-6 right-6 text-white/70 hover:text-white text-xs tracking-widest uppercase"
+      >
+        Close
+      </button>
+      <img
+        src={src}
+        alt=""
+        onClick={(e) => e.stopPropagation()}
+        className="max-w-full max-h-[85vh] rounded-lg object-contain shadow-2xl"
+      />
     </div>
   );
 }
 
 export function Moments() {
-  const [selected, setSelected] = useState<CaseStudy | null>(null);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   return (
     <section id="moments" className="py-20 md:py-28 px-6 md:px-12 lg:px-20">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <Reveal>
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-neutral-900 mb-12">
-            Selected Projects
+          <h2 className="font-heading text-2xl md:text-3xl font-bold text-neutral-900 mb-3">
+            Moments
           </h2>
+          <p className="text-neutral-500 text-sm mb-16 max-w-md">
+            A few highlights along the way — recognitions and milestones worth remembering.
+          </p>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {CASE_STUDIES.map((study, i) => (
-            <Reveal key={study.index} delay={i * 100}>
-              <article
-                className="group cursor-pointer"
-                onClick={() => setSelected(study)}
-              >
-                <div className="overflow-hidden rounded-xl mb-4">
-                  <img
-                    src={study.image}
-                    alt={study.title}
-                    className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+        <div className="space-y-20 md:space-y-28">
+          {MOMENTS.map((moment, i) => {
+            const reversed = i % 2 === 1;
+            return (
+              <Reveal key={moment.title} delay={i * 100}>
+                <div
+                  className={`flex flex-col md:flex-row gap-8 md:gap-14 items-center ${
+                    reversed ? 'md:flex-row-reverse' : ''
+                  }`}
+                >
+                  <div className="w-full md:w-1/2 relative">
+                    <button
+                      onClick={() => setLightbox(moment.images[0])}
+                      className="block w-full aspect-[4/3] rounded-xl overflow-hidden border border-neutral-100 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.14)] transition-shadow duration-300"
+                    >
+                      <img
+                        src={moment.images[0]}
+                        alt={moment.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      />
+                    </button>
+                    {moment.images[1] && (
+                      <button
+                        onClick={() => setLightbox(moment.images[1])}
+                        className={`hidden md:block absolute -bottom-6 ${
+                          reversed ? '-left-6 -rotate-3' : '-right-6 rotate-3'
+                        } w-28 aspect-[4/3] rounded-lg overflow-hidden border-4 border-white shadow-[0_8px_24px_rgba(0,0,0,0.18)] hover:scale-105 hover:rotate-0 transition-transform duration-300 bg-white`}
+                      >
+                        <img
+                          src={moment.images[1]}
+                          alt={`${moment.title} certificate`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="w-full md:w-1/2">
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-3">
+                      {moment.date}
+                    </p>
+                    <h3 className="font-heading text-xl md:text-2xl font-semibold text-neutral-900 mb-3">
+                      {moment.title}
+                    </h3>
+                    <p className="text-neutral-600 leading-relaxed text-sm">
+                      {moment.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-1">
-                  {study.label}
-                </p>
-                <h3 className="font-heading text-lg font-semibold text-neutral-900 mb-2 group-hover:text-neutral-500 transition-colors">
-                  {study.title}
-                </h3>
-                <span className="inline-flex items-center gap-1.5 text-xs tracking-widest uppercase text-neutral-400 group-hover:text-neutral-800 transition-colors">
-                  View
-                  <ArrowRight
-                    size={11}
-                    strokeWidth={1.5}
-                    className="group-hover:translate-x-0.5 transition-transform duration-300"
-                  />
-                </span>
-              </article>
-            </Reveal>
-          ))}
+              </Reveal>
+            );
+          })}
         </div>
       </div>
 
-      {selected && <CaseModal study={selected} onClose={() => setSelected(null)} />}
+      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
     </section>
   );
 }
